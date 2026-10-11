@@ -2310,39 +2310,84 @@ function renderGenericProjectBlueprint(query, category) {
         .join('');
     document.getElementById('blueprintRoadmap').innerHTML = roadmapHtml;
     
-    const detailsHtml = `
-        <li><strong>Project Type:</strong> ${category}</li>
-        <li><strong>Skill Level:</strong> Intermediate to Advanced</li>
-        <li><strong>Key Success Factors:</strong> Consistent effort, regular testing, comprehensive documentation</li>
-        <li><strong>Suggested Portfolio Platforms:</strong> GitHub, Behance, Dribbble, personal portfolio website</li>
-    `;
-    document.getElementById('blueprintDetails').innerHTML = detailsHtml;
+    const detailsElement = document.getElementById('blueprintDetails');
+    if (detailsElement) {
+        detailsElement.innerHTML = '';
+        const detailItems = [
+            `Project Type: ${category}`,
+            'Skill Level: Intermediate to Advanced',
+            'Key Success Factors: Consistent effort, regular testing, comprehensive documentation',
+            'Suggested Portfolio Platforms: GitHub, Behance, Dribbble, personal portfolio website'
+        ];
+        detailItems.forEach((detail) => {
+            const listItem = document.createElement('li');
+            listItem.textContent = detail;
+            detailsElement.appendChild(listItem);
+        });
+    }
 }
 
 /**
  * Render Wikipedia background data
  */
 function renderWikiData(query, wikiData, category) {
+    const wikiSnippetEl = document.getElementById('wikiSnippet');
+    const wikiTitleEl = document.getElementById('wikiTitle');
+    const techDetailsEl = document.getElementById('techDetails');
+    if (!wikiSnippetEl || !wikiTitleEl || !techDetailsEl) return;
+
     if (!wikiData) {
-        document.getElementById('wikiSnippet').innerHTML = `<p style="color: var(--text-secondary);">No Wikipedia data found for "${query}". Showing general information instead.</p>`;
-        document.getElementById('wikiTitle').textContent = 'General Background';
+        wikiSnippetEl.innerHTML = '';
+        const fallback = document.createElement('p');
+        fallback.style.color = 'var(--text-secondary)';
+        fallback.textContent = `No Wikipedia data found for "${query}". Showing general information instead.`;
+        wikiSnippetEl.appendChild(fallback);
+        wikiTitleEl.textContent = 'General Background';
         return;
     }
 
-    document.getElementById('wikiTitle').textContent = wikiData.title;
-    document.getElementById('wikiSnippet').innerHTML = `<p>${wikiData.snippet}</p>`;
-    
-    const techDetails = [
-        `<strong>Topic:</strong> ${wikiData.title}`,
-        `<strong>Category:</strong> ${category}`,
-        `<strong>Read More:</strong> <a href="${wikiData.url}" target="_blank" style="color: var(--brand-primary); text-decoration: underline;">Wikipedia Article</a>`,
-        `<strong>Primary Use Cases:</strong> Educational projects, portfolio building, professional development`,
-        `<strong>Industry Relevance:</strong> Highly relevant for career growth and technical skill enhancement`
-    ];
-    
-    document.getElementById('techDetails').innerHTML = techDetails
-        .map(detail => `<li>${detail}</li>`)
-        .join('');
+    wikiTitleEl.textContent = wikiData.title;
+    wikiSnippetEl.innerHTML = '';
+    const snippetParagraph = document.createElement('p');
+    snippetParagraph.textContent = wikiData.snippet || '';
+    wikiSnippetEl.appendChild(snippetParagraph);
+
+    techDetailsEl.innerHTML = '';
+
+    const topicItem = document.createElement('li');
+    topicItem.textContent = `Topic: ${wikiData.title}`;
+    techDetailsEl.appendChild(topicItem);
+
+    const categoryItem = document.createElement('li');
+    categoryItem.textContent = `Category: ${category}`;
+    techDetailsEl.appendChild(categoryItem);
+
+    const readMoreItem = document.createElement('li');
+    readMoreItem.textContent = 'Read More: ';
+    try {
+        const parsedUrl = new URL(wikiData.url);
+        if (parsedUrl.protocol === 'http:' || parsedUrl.protocol === 'https:') {
+            const readMoreLink = document.createElement('a');
+            readMoreLink.href = parsedUrl.toString();
+            readMoreLink.target = '_blank';
+            readMoreLink.rel = 'noopener noreferrer';
+            readMoreLink.style.color = 'var(--brand-primary)';
+            readMoreLink.style.textDecoration = 'underline';
+            readMoreLink.textContent = 'Wikipedia Article';
+            readMoreItem.appendChild(readMoreLink);
+        }
+    } catch (error) {
+        // Ignore invalid URLs and keep plain text fallback
+    }
+    techDetailsEl.appendChild(readMoreItem);
+
+    const useCasesItem = document.createElement('li');
+    useCasesItem.textContent = 'Primary Use Cases: Educational projects, portfolio building, professional development';
+    techDetailsEl.appendChild(useCasesItem);
+
+    const relevanceItem = document.createElement('li');
+    relevanceItem.textContent = 'Industry Relevance: Highly relevant for career growth and technical skill enhancement';
+    techDetailsEl.appendChild(relevanceItem);
 }
 
 /**

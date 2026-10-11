@@ -243,7 +243,15 @@ async function searchWikipedia(query) {
       }) || results[0];
 
       const pageTitle = bestResult.title;
-      const summary = (bestResult.snippet || '').replace(/<[^>]*>/g, '');
+      const summary = (bestResult.snippet || '')
+        .replace(/<[^>]*>/g, '')
+        .replace(/[&<>"']/g, (char) => ({
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;'
+        }[char]));
 
       return {
         title: pageTitle,
