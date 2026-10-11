@@ -446,8 +446,11 @@ function switchTab(tabId, btnElement) {
   currentTab = tabId;
   window.location.hash = tabId;
 
+  const mainTabButtons = document.querySelectorAll(".tab-bar > .tab-btn");
+  const mainTabContents = document.querySelectorAll(".container > .tab-content");
+
   // Toggle active tab buttons
-  document.querySelectorAll(".tab-btn").forEach(btn => {
+  mainTabButtons.forEach(btn => {
     btn.classList.remove("active");
     btn.setAttribute("aria-selected", "false");
   });
@@ -455,10 +458,13 @@ function switchTab(tabId, btnElement) {
   btnElement.setAttribute("aria-selected", "true");
 
   // Toggle active contents
-  document.querySelectorAll(".tab-content").forEach(content => {
+  mainTabContents.forEach(content => {
     content.classList.remove("active");
   });
-  document.getElementById(tabId).classList.add("active");
+  const targetTab = document.getElementById(tabId);
+  if (targetTab) {
+    targetTab.classList.add("active");
+  }
 
   // Custom tab activities
   if (tabId === "games") {
